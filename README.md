@@ -1,8 +1,10 @@
 # SHAREM
 
-Welcome to SHAREM! **SHAREM will be at BlackHat Europe Arsenal 2022 in London, England on both December 7th and 8th! Come stop by if you are attending!**
+Welcome to SHAREM! 
 
-SHAREM is intended to be the ultimate Windows shellcode tool, with support to emulate over 12,000 WinAPIs, virtually all user-mode Windows syscalls, and SHAREM provides numerous new features. SHAREM was released on September 29, 2022, at Virus Bulletin, the top malware conference globally. SHAREM contains an emulator, a disassembler, timeless debugging, brute-force deobfuscation, and many other features. SHAREM's emulator can also display complete structures (or even structures within structures) and it can allow encoded shellcode to deobfuscate itself. SHAREM logs output from all WinAPIs and Windows syscalls analyzed, and it also breaks each into many categories and subcategories. SHAREM's complete code coverage also allows it to discover unreachable functionality.
+SHAREM was presented at DEFCON 31 in "Game-Changing Advances in Windows Shellcode Analysis" and Black Hat USA Arsenal. A companion Ghidra plugin was made available (separately) from Trellix, courtesy of Max Kersten. Thus, you can extend the power of SHAREM to Ghidra, if you so desire. 
+
+SHAREM is intended to be the ultimate Windows shellcode tool, with support to emulate over 20,000 WinAPIs, virtually all user-mode Windows syscalls, and SHAREM provides numerous new features. SHAREM was released on September 29, 2022. SHAREM contains an emulator, a disassembler, timeless debugging, brute-force deobfuscation, and many other features. SHAREM's emulator can also display complete structures (or even structures within structures) and it can allow encoded shellcode to deobfuscate itself. SHAREM logs output from all WinAPIs and Windows syscalls analyzed, and it also breaks each into many categories and subcategories. SHAREM's complete code coverage also allows it to discover unreachable functionality.
 
 SHAREM's disassembler is able to integrate discovered functions into the disassembly, labelling each in the disassembler. SHAREM also will displayed the decrypted form of encoded shellcode in the disassembler, so it is not necessary to debug shellcode.
 
@@ -26,14 +28,23 @@ It can be installed from https://git-scm.com/download/win. After installion rest
 3. Do
 ```py -m pip list``` or  ```python3 -m pip list``` to verify that that SHAREM is installed locally as a package. It must be installed as a package to work.
 
+After SHAREM is installed, when ou first run a shellcode, you want to be inside the sharem_cli folder. For instance, when in that directory, you could run
+py main.py -r32 shellcode.bin
+
 Note: The first time that you attempt to emulate a shellcode on Windows, it will attempt to harvest and inflate Windows DLLs. This process begins automatically when trying to first emulate a shellcode. It will copy them, moving the copied (and later inflated) DLLs to a SHAREM directory. There are additional steps, but this whole initial process can take several minutes. After it has completed, you should not have to do this again. This must be done separately both for 32- and 64-bit shellcode. 
+
+If the file ends in .txt, it will assume the shellcode is ASCII representation of HEX (rather than pure hexadecimal), and it will interpret it as such. This works with something found online.
 
 ## Linux
 1. ```chmod +x linux_installer.sh``` Enable Execution of the Installer
 2. ```sudo ./linux_installer.sh``` Execute the Installer
 3. Add DLL Files
 
-You will need to add the Windows DLL files. We do not currently these available as a separate download for Linux users. At this time, users would need harvest them by installing it via Windows. (Note: These DLLs MUST be inflated by SHAREM. Dlls cannot be used if not inflated.) Later, we will provide these as a separate download in the coming weeks.
+You will need to add the Windows DLL files. We do not currently these available as a separate download for Linux users. At this time, users would need harvest them by installing it via Windows. (Note: These DLLs MUST be inflated by SHAREM. Dlls cannot be used if not inflated. Most, though perhaps not all, will fail if not inflated the proper amount.) Later, we may provide these as a separate download in the coming weeks. But in the meantime, the user can follow the Windows steps to generate them and move them to Linux, placing them in sharem\sharem\sharem\DLLs\x64 and sharem\sharem\sharem\DLLs\x86. You would also need the foundDLLAddresses32.json and FoundDLLAddresses64.json, which should go in sharem\sharem\sharem .
+
+# Ghidra Script
+Max Kersten's Ghidra Script as shown at Black Hat and DEFCON this August 2023 can be found here: https://github.com/advanced-threat-research/GhidraScripts/blob/main/Sharem.java
+Further documentation on usage will be forthcoming. This Ghidra plugin is courtesy of Trellix! You are still required to use SHAREM. This ingests the JSON output produced by SHAREM and converts it into a format useful for Ghidra. More about Max himself can be found at https://maxkersten.nl/.
 
 # Documentation
 Documentation can be found at the [SHAREM Wiki](https://github.com/Bw3ll/sharem/wiki), which provides some instructional  information on SHAREM usage, although there are significant portions and features not currently documented. 
@@ -46,6 +57,8 @@ Documentation can be found at the [SHAREM Wiki](https://github.com/Bw3ll/sharem/
 * Dec. 29, 2022: I addedd an **optional timeless debugging for the stack** feature. Previously, timeless debugging only captured instructions executed and register values before and after. Now we can see +/- 0xA0 from ESP. Unfortunately, it is a bit **slow**. This must be enabled separately. Additionally, I discovered some bugs that gave incorrect results from breaking out of loops, which in some cases could cause an emulation to prematurely terminate. I have corrected this. I have also now had SHAREM output when it breaks out of loops, indicating where it goes, once it breaks out of a loop.
 * Jan. 4, 2023: I revamped the complete code coverage a great deal, enhancing its performance. I have also exposed several optional features that can be tweaked by expert users on case by case basis via the UI or the config file. More info at the [complete code coverage wiki page](https://github.com/Bw3ll/sharem/wiki/Complete-Code-Coverage).
 * Jan. 5, 2023: Added keystroke shortcut to the complete code coverage submenu from the Emulator menu. For those with yesterday's update already downloaded, the keystroke is the letter "o".
+* Jan. 16, 2023: Added three new fields to disassembly JSON files that are generated. This update is NOT needed for anyone not using those JSONs, which is a nonstandard way of using SHAREM.
+* Aug. 3, 2023: Approximately 5000-6000 APIs were added from around 30 additional DLLs. Other enhancements in support of this.
 
 # Screenshots
 SHAREM is a very powerful framework with numerous capabilities, some well documented, and some which are not. This section will showcase a small number of those capabilities. 
@@ -64,7 +77,7 @@ SHAREM also has the ability to download files via UrldownloadToFileA, if they ex
 
 
 # Co-Authors and Contributors
-Dr. Bramwell Brizendine, Austin Babcock, Jake Hince, Shelby VandenHoek, Sascha Walker, Tarek Abdelmotaleb, Evan Read, Dylan Park, and Kade Brost.
+Dr. Bramwell Brizendine, Austin Babcock, Jake Hince, Shelby VandenHoek, Sascha Walker, Evan Read, Dylan Park, Tarek Abdelmotaleb, and Kade Brost.
 
 # Acknowledgement
 This research and some co-authors have been supported by NSA Grant H98230-20-1-0326.
