@@ -413,23 +413,22 @@ def saveDLLAddsToFile(foundDLLAddrs, export_dict):
         with open(foundDLLAddrs, 'r') as f:
             currentData = json.load(f)
 
-        if len(currentData) == 0 or True:
-            print ("currentData==0")
+        if len(currentData) == 0 or True:  #### the one below does NOT work correctly
+            # print ("currentData==0")
             with open(foundDLLAddrs, 'w') as out:
                 json.dump(export_dict, out)
 
-        else:
-            with open(foundDLLAddrs, 'a') as out:
-                for apiAddr, apiInfo in export_dict.items():
-                    if apiAddr not in currentData.keys():
-                        print ("apiAddr", apiInfo)
-                        newRecord = {}
-                        newRecord[apiAddr] = apiInfo
-                        json.dump(newRecord, out)
+        # else:
+        #     with open(foundDLLAddrs, 'a') as out:
+        #         for apiAddr, apiInfo in export_dict.items():
+        #             if apiAddr not in currentData.keys():
+        #                 print ("apiAddr", apiInfo)
+        #                 newRecord = {}
+        #                 newRecord[apiAddr] = apiInfo
+        #                 json.dump(newRecord, out)
 
 def initMods(uc, em, export_dict, source_path, save_path):
-    print ("export_dict size2", len(export_dict))
-
+    # print ("export_dict size2", len(export_dict))
 
     global allDlls
     allDlls = ["ntdll", "kernel32", "KernelBase", "advapi32", "comctl32", "comdlg32", "gdi32", "gdiplus", "imm32",

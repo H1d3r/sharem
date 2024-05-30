@@ -13,9 +13,9 @@ def readDLLsAddsFromFile(foundDLLAddrs, export_dict):
             export_dict = json.load(f)
         return export_dict
     except Exception as e:
-        print ("this is the traceback:")
-        print(traceback.format_exc())
-        print("error:",e)
+        # print ("this is the traceback:")
+        # print(traceback.format_exc())
+        # print("error:",e)
         return {}
         
 def insertIntoBytes(binaryBlob, start, size, value):
