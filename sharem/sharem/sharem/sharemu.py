@@ -291,14 +291,16 @@ def loadDlls(mu):
         foundDLLAddrs = foundDLLAddresses64
         source_path = 'C:\\Windows\\System32\\'
         save_path = expandedDLLsPath64
+    export_dict0 = readDLLsAddsFromFile(foundDLLAddrs, export_dict)
 
-    mods, export_dict, MOD_HIGH = initMods(mu, em, export_dict, source_path, save_path)
+    mods, export_dict, MOD_HIGH = initMods(mu, em, export_dict0, source_path, save_path)
 
     if len(export_dict) > 0:
         saveDLLAddsToFile(foundDLLAddrs, export_dict)
-
+    # print ("export_dict size", len(export_dict))
+    
     export_dict = readDLLsAddsFromFile(foundDLLAddrs, export_dict)
-
+    # print ("export_dict size", len(export_dict))
     return mods
 
 
