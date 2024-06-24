@@ -21,19 +21,18 @@ If you are new to SHAREM, feel free to check out a brief demo video, showcasing 
 SHAREM is installed as a local Python package, so that we have access to it in other projects. This allows parts of SHAREM to be imported. Thus, it must be installed as a package.
 
 1. Git is required for installation of sharem. 
-It can be installed from https://git-scm.com/download/win. After installion restart computer and continue with SHAREM install. The Git is to automate the installation of the Windows SSDeep. You can also manually do this and modify the .bat to exclude the SSDeep, if you do it yourself.
+It can be installed from https://git-scm.com/download/win. After installion restart computer and continue with SHAREM install. The Git is to automate the installation of the Windows SSDeep. You can also manually do this and modify the .bat to exclude the SSDeep, if you do it yourself. Manually installing it avoids the need to use Git. Note: for Windows, we are moving to a fork of SSDeep on the Bw3ll account that corrects some install issues with the previous version. This version and the previous were wrappers for SSDeep. 
 
 2. Run .bat file. It will call the setup.py file. Depending on how you call Python, you may need to call the alternate .bat file or even modify it slightly, if using something nonstandard.
 
 3. Do
 ```py -m pip list``` or  ```python3 -m pip list``` to verify that that SHAREM is installed locally as a package. It must be installed as a package to work.
 
-After SHAREM is installed, when ou first run a shellcode, you want to be inside the sharem_cli folder. For instance, when in that directory, you could run
-py main.py -r32 shellcode.bin
+After SHAREM is installed, when you first run a shellcode, you want to be inside the sharem_cli folder. For instance, when in that directory, you could run ```py main.py -r32 shellcode.bin```.
 
 Note: The first time that you attempt to emulate a shellcode on Windows, it will attempt to harvest and inflate Windows DLLs. This process begins automatically when trying to first emulate a shellcode. It will copy them, moving the copied (and later inflated) DLLs to a SHAREM directory. There are additional steps, but this whole initial process can take several minutes. After it has completed, you should not have to do this again. This must be done separately both for 32- and 64-bit shellcode. 
 
-If the file ends in .txt, it will assume the shellcode is ASCII representation of HEX (rather than pure hexadecimal), and it will interpret it as such. This works with something found online.
+If the file ends in .txt, it will assume the shellcode is ASCII representation of HEX (rather than pure hexadecimal), and it will interpret it as such. This works with something found online. If using an ASCII representation of the hexadecimal, having the filename terminate in .txt is a requirement. 
 
 ## Linux
 1. ```chmod +x linux_installer.sh``` Enable Execution of the Installer
@@ -43,8 +42,8 @@ If the file ends in .txt, it will assume the shellcode is ASCII representation o
 You will need to add the Windows DLL files. We do not currently these available as a separate download for Linux users. At this time, users would need harvest them by installing it via Windows. (Note: These DLLs MUST be inflated by SHAREM. Dlls cannot be used if not inflated. Most, though perhaps not all, will fail if not inflated the proper amount.) Later, we may provide these as a separate download in the coming weeks. But in the meantime, the user can follow the Windows steps to generate them and move them to Linux, placing them in sharem\sharem\sharem\DLLs\x64 and sharem\sharem\sharem\DLLs\x86. You would also need the foundDLLAddresses32.json and FoundDLLAddresses64.json, which should go in sharem\sharem\sharem .
 
 # Ghidra Script
-Max Kersten's Ghidra Script as shown at Black Hat and DEFCON this August 2023 can be found here: https://github.com/advanced-threat-research/GhidraScripts/blob/main/Sharem.java
-Further documentation on usage will be forthcoming. This Ghidra plugin is courtesy of Trellix! You are still required to use SHAREM. This ingests the JSON output produced by SHAREM and converts it into a format useful for Ghidra. More about Max himself can be found at https://maxkersten.nl/.
+Max Kersten's excellent Ghidra Script as shown at Black Hat and DEFCON this August 2023 can be found here: https://github.com/advanced-threat-research/GhidraScripts/blob/main/Sharem.java
+Some of Max's instructions are here: https://github.com/advanced-threat-research/GhidraScripts/  This Ghidra plugin is courtesy of Trellix! You are still required to use SHAREM. This ingests the JSON output produced by SHAREM and converts it into a format useful for Ghidra. More about Max himself can be found at https://maxkersten.nl/.
 
 # Documentation
 Documentation can be found at the [SHAREM Wiki](https://github.com/Bw3ll/sharem/wiki), which provides some instructional  information on SHAREM usage, although there are significant portions and features not currently documented. 
