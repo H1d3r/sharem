@@ -38,7 +38,7 @@ else:
 try:
 	import ssdeep
 except:
-	print ("Ssdeep needs to be installed. A Windows Python wrapper is available:\nhttps://github.com/DinoTools/python-ssdeep")
+	print ("Ssdeep needs to be installed. A Windows Python wrapper is available:\nhttps://github.com/Bw3ll/ssdeep-windows-32_64 \nThe Linux version of SSDeep is here:\nhttps://github.com/DinoTools/python-ssdeep")
 
 try:
 	if platformType == "Windows":
