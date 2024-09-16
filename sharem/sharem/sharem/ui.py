@@ -110,6 +110,7 @@ def showOptions(shellBit, rawHex, name,hMd5):
    h		{}
    l		{}
    z		{}
+   A		{}
    s		{}
    D		{}
    d		{}
@@ -126,6 +127,7 @@ def showOptions(shellBit, rawHex, name,hMd5):
 	""".format( res +"Display options."+cya, 
 				res+ "Shellcode Emulator"+cya, 
 				res+"Do everything with current selections."+cya,
+				res+"Leverage AI to analyze emulated shellcode."+cya,
 				res+"Find Assembly instructions associated with shellcode."+cya,
 				res+ "Disassemble shellcode"+cya, 
 				res+ "Disassembly of shellcode submenu"+cya, 

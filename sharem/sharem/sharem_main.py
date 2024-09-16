@@ -11,7 +11,6 @@ from collections import OrderedDict
 import random	
 import ctypes
 from ctypes import *
-
 import timeit
 import string
 import csv
@@ -40,6 +39,7 @@ try:
 except:
 	print ("Ssdeep needs to be installed. A Windows Python wrapper is available:\nhttps://github.com/Bw3ll/ssdeep-windows-32_64 \nThe Linux version of SSDeep is here:\nhttps://github.com/DinoTools/python-ssdeep")
 
+
 try:
 	if platformType == "Windows":
 		import win32api
@@ -48,6 +48,7 @@ try:
 		import _win32sysloader
 except:
 	print ("Pywin32 needs to be installed.\nhttps://pypi.org/project/pywin32/\n\tThe setup.py is not always effective at installing Pywin32, so it may need to be manually done.\n")
+
 
 colorama.init()
 # readRegs()
@@ -120,6 +121,9 @@ decodedBytes=b''
 maxZeroes = 0
 shellEntry=0x0
 useDirectory = False
+OPENAI_API_KEY=None
+openai_model_4o=True
+openai_model_3_5_turbo=False
 
 VP = 0
 VA=""
@@ -15241,12 +15245,14 @@ def isShellcode():
 
 
 def regenerateDisassemblyForPrint():
+	# print ("regenerateDisassemblyForPrint")
 	global gDisassemblyText
 	global gDisassemblyTextNoC
 
 	disassembly, disassemblyC=createDisassemblyLists(True,"final")
 	gDisassemblyText =disassemblyC
 	gDisassemblyTextNoC = disassembly
+	return gDisassemblyTextNoC
 
 commentsGiven=False
 def addComments():
@@ -18942,6 +18948,201 @@ def disPrintStyleTogg():
 		disPrintStyle(mBool[o].bPreSysDisDone, toggList) 
 		return
 
+
+cT=0
+
+def print_nested_dict(d, useColors, indent=0):
+    # print ("type - d",type(d))
+    cList=[mag,cya,blu,gre,yel,red]
+    # useColors=False
+    if useColors:
+        cList=[mag,cya,blu,gre,yel,red]
+        color1=gre
+        color2=cya
+    else:
+        cList=["","","","","","","","","","","","","",""]
+        color1=""
+        color2=""
+
+    global cT
+    cT+=1
+    out=""
+
+    for key, value in d.items():
+        if isinstance(value, dict):
+            cT=dict_depth(sample_dict)
+            out+=('\n ' * indent + cList[cT]+ f"{key}:"+res+"\n")
+            out+=print_nested_dict(value, useColors,indent + 1)+"\n"
+        elif isinstance(value, list):
+            out+=('  ' * indent  +color1+f"{key}:" + res +" "+"\n")
+            for item in value:
+                if isinstance(item, dict):
+                    out+=print_nested_dict(item, useColors,indent + 1)+"\n"
+                else:
+                    out+=('  ' * (indent + 1) + str(item)+"\n")
+            # out+=('  ' * indent + "]\n")
+        else:
+            out+=('  ' * indent + color2 + f"{key}:"+res +f" {value}"+"\n")
+    return out
+   
+        
+# Example usage
+
+def dict_depth(d):
+    if isinstance(d, dict):
+        return 1 + max((dict_depth(value) for value in d.values()), default=0)
+    return 0
+
+# Example usage
+sample_dict = {
+    "level1": {
+        "level2": {
+            "level3": {
+                "level4": "value"
+            }
+        },
+        "level2_2": "value"
+    },
+    "level1_2": {
+        "level2_3": "value"
+    }
+}
+
+
+def printDict(myDict):
+
+
+
+# 	red ='\u001b[31;1m'
+# gre = '\u001b[32;1m'
+# yel = '\u001b[33;1m'
+# blu = '\u001b[34;1m'
+# mag = '\u001b[35;1m'
+# cya = '\u001b[36;1m'
+# whi = '\u001b[37m'
+# res = '\u001b[0m'
+	item=print_nested_dict(myDict,True)
+
+	indent=0
+	width=94
+	split_lines = item.split('\n')
+
+	out=""
+	for item in split_lines:
+		wrapped_item = textwrap3.fill(str(item), width=width, initial_indent='  ' * (indent + 1), subsequent_indent='  ' * (indent + 1))
+		# wrapped_item = wrapped_item.replace("\n\n\n", "\n\n")
+
+		out+=(wrapped_item +"\n")
+	out = out.replace("Excecutive Summary", "\n  Executive Summary")
+	out = out.replace("Concluding Remarks", "\n  Concluding Remarks")
+	out = out.replace("MITRE ATT&CK Techniques:", "\u001b[35;1m MITRE ATT&CK Techniques:")
+
+	out = out.replace("Comprehensive Analysis", "\u001b[35;1m\n Comprehensive Analysis")
+	out = out.replace("\n\n\n", "\n\n")
+	out = out.replace("\n\n\n", "\n\n")
+	
+	clean_out =  Variables.cleanColors(self = Variables, out=out).strip()		
+
+	# print(out)
+	return out, clean_out
+
+
+def leverageAI():
+	global dwords_A
+	global finalAI
+	global finalAI2
+	global sample_dict
+	global prompt_A
+	global cT
+	global gDisassemblyText
+	global filename
+	global OPENAI_API_KEY
+	cT=0
+
+	print (cya,"  Trying to leverage AI",gre)
+	
+	defaultAI="sk-proj-replace-string-with-your-ai-key"
+	if defaultAI == OPENAI_API_KEY:
+		print ("  You must supply an AI key from OpenAI in the "+yel+" \\sharem\\sharem\\sharem\\config.cfg"+gre)
+		print ("  Here is one reference: "+cya+" https://www.howtogeek.com/885918/how-to-get-an-openai-api-key/", res)
+		return
+	modelAI="gpt-4o"
+	if openai_model_4o:
+		modelAI="gpt-4o"
+	elif openai_model_3_5_turbo and openai_model_4o:
+		print (" Both AI models selected. Gpt-4o is used.")
+		modelAI="gpt-4o"
+	elif openai_model_3_5_turbo:
+		modelAI="gpt-3.5-turbo"
+
+	modelUsed="The AI model used is " + modelAI +"\n"
+
+	if not fRaw.status():
+		print("\n  You must do emulation first.\n",res)
+		return
+	if gDisassemblyText == "":
+		if mBool[o].bDisassemblyFound == False:
+			shellDisassemblyInit(m[o].rawData2, "silent")
+		if gDisassemblyText == "":
+			print("\n  Unable to find any disassembly. \n")
+			return
+		else:
+			mBool[o].bDisassemblyFound = True
+		gDisassemblyText=regenerateDisassemblyForPrint()
+		if gDisassemblyText == "":
+			print("\n  Unable to find any disassembly. \n  You must generate diassembly and do emulation first.\n")
+			return
+
+	apisTxt=emulation_txt_out(loggedList, logged_syscalls,False)
+	
+	
+	myPrompt1=modelUsed +  prompt_A  + apisTxt +  gDisassemblyText + dwords_A + gDisassemblyText + finalAI + finalAI2 + str(sample_dict) + finalAI3
+	aiDict= (AI_func(OPENAI_API_KEY,modelAI,myPrompt1))
+	
+	try:
+		try:
+
+			aiDict2=ast.literal_eval(aiDict)
+		except Exception as e:
+			print (e)
+			print(traceback.format_exc())
+	except:
+		print (red,"error: here was what it was trying to do", yel,aiDict, res)
+		print ("End content with errors.")
+
+	# print (aiDict2)
+	# print(red,type(aiDict2),res)
+	out, clean_out=printDict(aiDict2)
+	print (out)
+	# print (clean_out)
+	# print ("  The above is what was produced via AI.")
+
+	base_name = os.path.basename(filename) 
+	outfile = os.path.splitext(base_name)[0] 
+	# print (outfile)
+	aiResFileName =  outfile + "_" + "AI_results" + ".json"
+	aiResFileNameTxt =  outfile + "_" + "AI_results" + ".txt"
+
+	current_directory = os.path.dirname(__file__)
+	logs_directory = os.path.join(current_directory, "sharem", "logs", outfile)
+	saveFile = os.path.join(logs_directory, aiResFileName)
+	txtAIFileName = os.path.join(logs_directory, aiResFileNameTxt)
+
+	# print (saveFile)
+	os.makedirs(os.path.dirname(saveFile), exist_ok=True)
+	with open(saveFile, "w") as json_file:
+		json.dump(aiDict2, json_file, indent=4)
+
+	print(f"\n  JSON file '{saveFile}' has been created.")
+
+	os.makedirs(os.path.dirname(txtAIFileName), exist_ok=True)
+
+	txtAI = open(txtAIFileName, "w")
+	txtAI.write(clean_out)
+	txtAI.close()
+	print(f"  Txt file '{txtAIFileName}' has been created.\n")
+
+
 def disassembleSubMenu():
 
 	#disToggleMenu()
@@ -19423,6 +19624,9 @@ def emulationConf(conr):
 	global emuObj 
 	global emuSyscallCode
 	global emuSyscallSelection
+	global OPENAI_API_KEY
+	global openai_model_4o
+	global openai_model_3_5_turbo
 
 
 	bPrintEmulation = conr.getboolean('SHAREM EMULATION', 'print_emulation_result')
@@ -19444,6 +19648,11 @@ def emulationConf(conr):
 	em.winSP = conr['SHAREM EMULATION']['windows_release_osbuild']
 	emuSyscallCode = conr['SHAREM EMULATION']['windows_syscall_code']
 
+	OPENAI_API_KEY = conr['AI USAGE']['openai_key']
+
+
+	openai_model_4o = conr.getboolean('AI USAGE',"openai_model_4o")
+	openai_model_3_5_turbo = conr.getboolean('AI USAGE',"openai_model_3_5_turbo")
 	validKeys = emuSyscallSelection.keys()
 	foundKey = False
 	for key in validKeys:
@@ -20498,6 +20707,9 @@ def ui(): #UI menu loop
 				else:
 					info = showBasicInfoSections()
 					print(info)
+			elif userIN[0:1] == "A":
+				leverageAI()
+							
 			elif userIN[0:1] == "k":
 				uiFindStrings()
 				# print("\nReturning to main menu.\n")
@@ -22618,7 +22830,7 @@ def build_emu_results(apiList):
 
 	return api_names, api_params_values, api_params_types, api_params_names, api_address, ret_values, ret_type, api_bruteforce, sysCallID
 
-def emulation_txt_out(apiList, logged_syscalls):
+def emulation_txt_out(apiList, logged_syscalls,printToSc=True):
 	
 
 	#test printing the set of commandline values found inthe hook apis
@@ -22800,7 +23012,7 @@ def emulation_txt_out(apiList, logged_syscalls):
 	# for each in traversedAdds:
 	# 	print (hex(each))
 
-	if bPrintEmulation:
+	if bPrintEmulation and printToSc:
 		if len(apiList)>0 or len(logged_syscalls)>0:
 			try:
 				print(txt_output)
@@ -22811,7 +23023,7 @@ def emulation_txt_out(apiList, logged_syscalls):
 				print(txt_output)
 		else:
 			print (gre+"\n\t[*] No APIs discovered through emulation."+res2)
-		
+		return no_colors_out
 	else:
 		return no_colors_out
 
