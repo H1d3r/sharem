@@ -21,6 +21,7 @@ REQUIREMENTS = [
     "unicorn>=1.0.2",
     "textwrap3>=0.9.2",
     "urllib3",
+    "six",
     "openai"
 
 ]
